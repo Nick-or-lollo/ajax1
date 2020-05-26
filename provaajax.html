@@ -1,0 +1,67 @@
+<HTML><HEAD>
+<SCRIPT>
+let inizio=0;
+let countdown=10;
+let contatore=0;
+
+function punto(){
+  if(inizio==0){    //controllo che il countdown sia iniziato o no
+    inizio=1;
+    contatore++;
+    countdown=10;
+    tempo=setInterval(function(){         //funzione che parte ogni secondo
+      countdown--;
+      document.getElementById('tempo').innerHTML=countdown;
+      if(countdown==0){             //contatore a 0
+          mostra(contatore);
+          contatore=0;
+          countdown=10;
+          inizio=0;
+          clearInterval(tempo);      //non fa piu partire la funzione ogni secondo
+      }
+
+    }, 1000);
+
+  }
+  else{
+    contatore++;
+    document.getElementById('click').innerHTML=contatore;
+  }
+}
+
+function mostra(punti){
+  console.log(punti);
+  var str=punti.toString();
+  console.log(str);
+  if (window.XMLHttpRequest){
+    xmlhttp = new XMLHttpRequest();
+  }
+  else{
+    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+  }
+
+  xmlhttp.onreadystatechange = function(){
+
+    if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+      //i dati trasmessi dal server sono ricavati da responseText (tipo stringa)
+      var eccl=JSON.parse(xmlhttp.responseText);  //conversione da string a JSON
+      console.log(eccl);
+      document.getElementById("risposta").innerHTML = "Click totali "+eccl.clicktotali+"<BR>"+"Posizione "+eccl.posizione+" su "+eccl.totale+"<BR>"+"sei meglio del "+eccl.percentuale+"% dei giocatori"+"<BR>"+"Click per secondo "+eccl.clickpersec;
+    }
+  }
+
+  xmlhttp.open("GET", "php_con_ajax.php?stringa=" + str, true);     //richiesta con i punti che ha totalizzato
+  // send() trasmette effettivamente la richiesta al server.
+  // senza parametri si indica POST - per GET mettere i parametri tra parentesi
+  xmlhttp.send();
+}
+</SCRIPT></HEAD>
+<BODY>
+<P><B>click counter:</B></P>
+<button onclick="punto()">cliccami</button>
+<p id="tempo">10</p>
+<p id="click">0</p>
+
+<P>Statistiche: <DIV ID="risposta"></DIV></P>
+</BODY>
+</HTML>
